@@ -16,13 +16,13 @@ public class ElectricVehicle {
 
     private Double MaxCapacity;
 
-    private Double valueCharged;
+    private Integer valueCharged;
 
-    public Double getValueCharged() {
+    public Integer getValueCharged() {
         return valueCharged;
     }
 
-    public void setValueCharged(Double valueCharged) {
+    public void setValueCharged(Integer valueCharged) {
         this.valueCharged = valueCharged;
     }
 
@@ -43,7 +43,7 @@ public class ElectricVehicle {
         MaxCapacity = maxCapacity;
     }
 
-    public ElectricVehicle(Integer id, Integer chrDisPerHour, Double SOCcurrent, Double minSOC, Location location, Double maxCapacity, Double valueCharged) {
+    public ElectricVehicle(Integer id, Integer chrDisPerHour, Double SOCcurrent, Double minSOC, Location location, Double maxCapacity, Integer valueCharged) {
         this.id = id;
         this.chrDisPerHour = chrDisPerHour;
         this.SOCcurrent = SOCcurrent;
