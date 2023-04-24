@@ -1,0 +1,53 @@
+/**
+     * @param mat
+     * @param plugs
+     * @param timeSlots
+     * @return the maximum value from the array of ediff, but taking into account the ABSOLUTE value
+     */
+    public float findMax(float mat[][], Integer plugs, Integer timeSlots) {
+        float maxElement = Float.MIN_VALUE;
+        for (int i = 0; i < plugs; i++) {
+            for (int j = 0; j < timeSlots; j++) {
+                if (mat[i][j] * mat[i][j] > maxElement) {
+                    maxElement = mat[i][j];
+                }
+            }
+        }
+        return maxElement;
+    }
+
+    public List<ElectricVehicle[][]> generateEdiff(Integer sampleSize, Integer plugs, Integer timeSlots, List<ElectricVehicle> electricVehicleList, ArrayList<Double> ediffMatrix) {
+        List<ElectricVehicle[][]> ediffList = new ArrayList<>();
+        /*for(int i=sampleSize;i>0;i--){
+            //going through the ediff matrix
+            for (int k = 0; k < plugs; k++) {
+                for (int j = 0; j < timeSlots; j++) {
+                    //finding maxElement at each step
+                    float maxElement=findMax(ediffMatrix,plugs,timeSlots);
+                    //replace with 0 the value of the max to be able to get the next one
+                    int m=0;
+                    int n=0;
+                    for (m = 0; m < plugs; m++) {
+                        for (n = 0; n < timeSlots; n++) {
+                            if(ediffMatrix[m][n]==maxElement){
+                                ediffMatrix[m][n]=0;
+                            }
+                        }
+                    }
+
+                    for (ElectricVehicle ev: electricVehicleList) {
+                        if(maxElement>0){
+                            //check car who can charge
+                        }
+                        else{
+                            //check cars who can discharge
+                        }
+                    }
+
+                }
+            }
+
+
+        }*/
+        return ediffList;
+    }
