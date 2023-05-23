@@ -1,9 +1,14 @@
 package com.example.evcharge.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
+@Entity
+@Table(name = "stations")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "electricVehicles"})
 @Getter
 @Setter
 @AllArgsConstructor
@@ -11,10 +16,18 @@ import java.util.ArrayList;
 @ToString
 public class ChargingStation {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     private String name;
 
-    private ArrayList<Integer> plugIds;
+    @OneToMany(mappedBy = "favouriteChargingStation",fetch = FetchType.EAGER,
+            orphanRemoval = true)
+    private List<ElectricVehicle> electricVehicles;
+
+    @Convert(converter = IntegerListConverter.class)
+    private List<Integer> plugIds;
+
 
 }

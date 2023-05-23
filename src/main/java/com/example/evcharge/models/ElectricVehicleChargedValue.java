@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+
 public class ElectricVehicleChargedValue {
 
     private ElectricVehicle electricVehicle;
@@ -17,4 +17,11 @@ public class ElectricVehicleChargedValue {
         return new ElectricVehicleChargedValue(this.getElectricVehicle(),this.getValueCharged());
     }
 
+    @Override
+    public String toString() {
+        return "ECV{" +
+                "ev=" + electricVehicle +
+                ", val=" + valueCharged +
+                '}';
+    }
 }
