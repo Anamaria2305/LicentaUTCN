@@ -31,21 +31,18 @@ public class EVController {
     @Autowired
     WhaleSolutionParser whaleSolutionParser;
 
-    private EVhelper eVhelper= new EVhelper();
-
-    private ArrayList<Double> ediffList = new ArrayList<>();
+    private EVhelper eVhelper = new EVhelper();
 
     @RequestMapping(method = RequestMethod.GET, value = "/allev")
     @ResponseBody
     public List<ElectricVehicle> getAllEv() {
-        return dataGathering.collectData();
+        return dataGathering.collectData(10);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/ediff")
     @ResponseBody
-    public List<Double> getEdiff(@RequestParam(name = "plugs") Integer plugs,@RequestParam(name = "startTime") Integer startTime) throws IOException {
-        ediffList = dataGathering.collectEdiff(plugs,startTime);
-        return ediffList;
+    public List<Double> getEdiff(@RequestParam(name = "plugs") Integer plugs, @RequestParam(name = "startTime") Integer startTime,@RequestParam(name = "chargeType") String chargeType) throws IOException {
+        return dataGathering.collectEdiff(plugs, startTime,chargeType);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/allcs")
@@ -56,10 +53,18 @@ public class EVController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/sol")
     @ResponseBody
-    public List<Pair<ElectricVehicleChargedValue,Integer>> getSol() throws IOException {
+    public List<Pair<ElectricVehicleChargedValue, Integer>> getSol(@RequestParam(name = "timSlots") Integer timSlots, @RequestParam(name = "startTime") Integer startTime,@RequestParam(name = "chargeType") String chargeType
+    ,@RequestParam(name = "maxCars") Integer maxCars,@RequestParam(name = "sampleSize") Integer sampleSize) throws IOException {
         List<ChargingStation> chargingStationList = chargingStationsService.getAll();
-        List<ElectricVehicle> electricVehicleList = dataGathering.collectData();
-        return  whaleSolutionParser.parseSolution( eVhelper.whaleOptimizationAlgorithm(1500,4,5,chargingStationList,electricVehicleList,ediffList));
+        int plugs =0;
+        for (ChargingStation cs: chargingStationList) {
+            plugs+=cs.getPlugIds().size();
+        }
+        List<ElectricVehicle> electricVehicleList = dataGathering.collectData(maxCars);
+        ArrayList<Double>ediffList = dataGathering.collectEdiff(timSlots, startTime,chargeType);
+        return whaleSolutionParser.parseSolution(eVhelper.whaleOptimizationAlgorithm(100, plugs, timSlots, chargingStationList, electricVehicleList, ediffList,sampleSize));
     }
+
+
 
 }

@@ -1,0 +1,1296 @@
+Chargin Station Violation: 0
+Time violation: 25.0
+Fitness score for best solution is: 133.11199999999997
+Euclidean distance of initial population is: 17483.0
+
+
+
+
+[
+    {
+        "size": 2,
+        "value1": 0,
+        "value0": {
+            "electricVehicle": {
+                "id": 5,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    3
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 20
+            },
+            "valueCharged": 22
+        }
+    },
+    {
+        "size": 2,
+        "value1": 0,
+        "value0": {
+            "electricVehicle": {
+                "id": 27,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2,
+                    3,
+                    4
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 29
+            },
+            "valueCharged": 22
+        }
+    },
+    {
+        "size": 2,
+        "value1": 0,
+        "value0": {
+            "electricVehicle": {
+                "id": 32,
+                "maxCapacity": 22,
+                "minSOC": 20,
+                "chrDisPerHour": 18,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    5
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 25
+            },
+            "valueCharged": 16
+        }
+    },
+    {
+        "size": 2,
+        "value1": 0,
+        "value0": {
+            "electricVehicle": {
+                "id": 38,
+                "maxCapacity": 24,
+                "minSOC": 20,
+                "chrDisPerHour": 20,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 60
+            },
+            "valueCharged": 5
+        }
+    },
+    {
+        "size": 2,
+        "value1": 1,
+        "value0": {
+            "electricVehicle": {
+                "id": 23,
+                "maxCapacity": 22,
+                "minSOC": 20,
+                "chrDisPerHour": 18,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    2,
+                    3
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 56
+            },
+            "valueCharged": 9
+        }
+    },
+    {
+        "size": 2,
+        "value1": 1,
+        "value0": {
+            "electricVehicle": {
+                "id": 37,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    2,
+                    5,
+                    7,
+                    8,
+                    9,
+                    10
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 57
+            },
+            "valueCharged": 17
+        }
+    },
+    {
+        "size": 2,
+        "value1": 1,
+        "value0": {
+            "electricVehicle": {
+                "id": 2,
+                "maxCapacity": 22,
+                "minSOC": 20,
+                "chrDisPerHour": 18,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 45
+            },
+            "valueCharged": 12
+        }
+    },
+    {
+        "size": 2,
+        "value1": 1,
+        "value0": {
+            "electricVehicle": {
+                "id": 26,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    10
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 29
+            },
+            "valueCharged": 22
+        }
+    },
+    {
+        "size": 2,
+        "value1": 2,
+        "value0": {
+            "electricVehicle": {
+                "id": 3,
+                "maxCapacity": 22,
+                "minSOC": 20,
+                "chrDisPerHour": 18,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    2,
+                    3
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 56
+            },
+            "valueCharged": 5
+        }
+    },
+    {
+        "size": 2,
+        "value1": 2,
+        "value0": {
+            "electricVehicle": {
+                "id": 13,
+                "maxCapacity": 22,
+                "minSOC": 20,
+                "chrDisPerHour": 18,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    3,
+                    4
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 45
+            },
+            "valueCharged": 12
+        }
+    },
+    {
+        "size": 2,
+        "value1": 2,
+        "value0": {
+            "electricVehicle": {
+                "id": 20,
+                "maxCapacity": 61,
+                "minSOC": 20,
+                "chrDisPerHour": 28,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    3,
+                    5
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 22
+            },
+            "valueCharged": 28
+        }
+    },
+    {
+        "size": 2,
+        "value1": 2,
+        "value0": {
+            "electricVehicle": {
+                "id": 30,
+                "maxCapacity": 61,
+                "minSOC": 20,
+                "chrDisPerHour": 28,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    3
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 45
+            },
+            "valueCharged": 28
+        }
+    },
+    {
+        "size": 2,
+        "value1": 3,
+        "value0": {
+            "electricVehicle": {
+                "id": 17,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    4,
+                    5
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 57
+            },
+            "valueCharged": 17
+        }
+    },
+    {
+        "size": 2,
+        "value1": 3,
+        "value0": {
+            "electricVehicle": {
+                "id": 11,
+                "maxCapacity": 22,
+                "minSOC": 20,
+                "chrDisPerHour": 18,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 27
+            },
+            "valueCharged": 16
+        }
+    },
+    {
+        "size": 2,
+        "value1": 3,
+        "value0": {
+            "electricVehicle": {
+                "id": 36,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    4,
+                    5
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 20
+            },
+            "valueCharged": 22
+        }
+    },
+    {
+        "size": 2,
+        "value1": 3,
+        "value0": {
+            "electricVehicle": {
+                "id": 18,
+                "maxCapacity": 24,
+                "minSOC": 20,
+                "chrDisPerHour": 20,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    4
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 60
+            },
+            "valueCharged": 9
+        }
+    },
+    {
+        "size": 2,
+        "value1": 4,
+        "value0": {
+            "electricVehicle": {
+                "id": 39,
+                "maxCapacity": 24,
+                "minSOC": 20,
+                "chrDisPerHour": 20,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    2,
+                    5
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 34
+            },
+            "valueCharged": 15
+        }
+    },
+    {
+        "size": 2,
+        "value1": 4,
+        "value0": {
+            "electricVehicle": {
+                "id": 33,
+                "maxCapacity": 22,
+                "minSOC": 20,
+                "chrDisPerHour": 18,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 45
+            },
+            "valueCharged": 12
+        }
+    },
+    {
+        "size": 2,
+        "value1": 4,
+        "value0": {
+            "electricVehicle": {
+                "id": 12,
+                "maxCapacity": 22,
+                "minSOC": 20,
+                "chrDisPerHour": 18,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    5
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 25
+            },
+            "valueCharged": 16
+        }
+    },
+    {
+        "size": 2,
+        "value1": 4,
+        "value0": {
+            "electricVehicle": {
+                "id": 24,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    3,
+                    5
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 21
+            },
+            "valueCharged": 22
+        }
+    },
+    {
+        "size": 2,
+        "value1": 5,
+        "value0": {
+            "electricVehicle": {
+                "id": 35,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 62
+            },
+            "valueCharged": 15
+        }
+    },
+    {
+        "size": 2,
+        "value1": 5,
+        "value0": {
+            "electricVehicle": {
+                "id": 21,
+                "maxCapacity": 22,
+                "minSOC": 20,
+                "chrDisPerHour": 18,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 23
+            },
+            "valueCharged": 16
+        }
+    },
+    {
+        "size": 2,
+        "value1": 5,
+        "value0": {
+            "electricVehicle": {
+                "id": 40,
+                "maxCapacity": 61,
+                "minSOC": 20,
+                "chrDisPerHour": 28,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2,
+                    3,
+                    5
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 22
+            },
+            "valueCharged": 28
+        }
+    },
+    {
+        "size": 2,
+        "value1": 5,
+        "value0": {
+            "electricVehicle": {
+                "id": 14,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 22
+            },
+            "valueCharged": 22
+        }
+    },
+    {
+        "size": 2,
+        "value1": 6,
+        "value0": {
+            "electricVehicle": {
+                "id": 1,
+                "maxCapacity": 22,
+                "minSOC": 20,
+                "chrDisPerHour": 18,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    7,
+                    8
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 23
+            },
+            "valueCharged": 16
+        }
+    },
+    {
+        "size": 2,
+        "value1": 6,
+        "value0": {
+            "electricVehicle": {
+                "id": 31,
+                "maxCapacity": 22,
+                "minSOC": 20,
+                "chrDisPerHour": 18,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 27
+            },
+            "valueCharged": 16
+        }
+    },
+    {
+        "size": 2,
+        "value1": 6,
+        "value0": {
+            "electricVehicle": {
+                "id": 6,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2,
+                    3,
+                    7,
+                    8,
+                    9,
+                    10
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 29
+            },
+            "valueCharged": 22
+        }
+    },
+    {
+        "size": 2,
+        "value1": 6,
+        "value0": {
+            "electricVehicle": {
+                "id": 22,
+                "maxCapacity": 22,
+                "minSOC": 20,
+                "chrDisPerHour": 18,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    4,
+                    5,
+                    6,
+                    7
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 45
+            },
+            "valueCharged": 12
+        }
+    },
+    {
+        "size": 2,
+        "value1": 7,
+        "value0": {
+            "electricVehicle": {
+                "id": 29,
+                "maxCapacity": 24,
+                "minSOC": 20,
+                "chrDisPerHour": 20,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2,
+                    4,
+                    5,
+                    6
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 34
+            },
+            "valueCharged": 12
+        }
+    },
+    {
+        "size": 2,
+        "value1": 7,
+        "value0": {
+            "electricVehicle": {
+                "id": 19,
+                "maxCapacity": 24,
+                "minSOC": 20,
+                "chrDisPerHour": 20,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    2,
+                    3,
+                    4,
+                    8,
+                    9,
+                    10
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 34
+            },
+            "valueCharged": 15
+        }
+    },
+    {
+        "size": 2,
+        "value1": 7,
+        "value0": {
+            "electricVehicle": {
+                "id": 10,
+                "maxCapacity": 61,
+                "minSOC": 20,
+                "chrDisPerHour": 28,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    3
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 45
+            },
+            "valueCharged": 28
+        }
+    },
+    {
+        "size": 2,
+        "value1": 7,
+        "value0": {
+            "electricVehicle": {
+                "id": 16,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    2,
+                    3,
+                    4,
+                    7,
+                    8,
+                    9,
+                    10
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 20
+            },
+            "valueCharged": 22
+        }
+    },
+    {
+        "size": 2,
+        "value1": 8,
+        "value0": {
+            "electricVehicle": {
+                "id": 25,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    3
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 20
+            },
+            "valueCharged": 19
+        }
+    },
+    {
+        "size": 2,
+        "value1": 8,
+        "value0": {
+            "electricVehicle": {
+                "id": 7,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    3
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 29
+            },
+            "valueCharged": 20
+        }
+    },
+    {
+        "size": 2,
+        "value1": 8,
+        "value0": {
+            "electricVehicle": {
+                "id": 34,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    2,
+                    5,
+                    8,
+                    9,
+                    10
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 22
+            },
+            "valueCharged": 22
+        }
+    },
+    {
+        "size": 2,
+        "value1": 8,
+        "value0": {
+            "electricVehicle": {
+                "id": 4,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 21
+            },
+            "valueCharged": 22
+        }
+    },
+    {
+        "size": 2,
+        "value1": 9,
+        "value0": {
+            "electricVehicle": {
+                "id": 15,
+                "maxCapacity": 41,
+                "minSOC": 20,
+                "chrDisPerHour": 22,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    4,
+                    5
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 62
+            },
+            "valueCharged": 15
+        }
+    },
+    {
+        "size": 2,
+        "value1": 9,
+        "value0": {
+            "electricVehicle": {
+                "id": 9,
+                "maxCapacity": 24,
+                "minSOC": 20,
+                "chrDisPerHour": 20,
+                "favouriteChargingStation": {
+                    "id": 1,
+                    "name": "Strada  Fabricii nr 56",
+                    "plugIds": [
+                        0,
+                        1
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    8,
+                    9,
+                    10
+                ],
+                "constraintsPenalty": [
+                    3,
+                    5
+                ],
+                "soccurrent": 34
+            },
+            "valueCharged": 15
+        }
+    },
+    {
+        "size": 2,
+        "value1": 9,
+        "value0": {
+            "electricVehicle": {
+                "id": 8,
+                "maxCapacity": 24,
+                "minSOC": 20,
+                "chrDisPerHour": 20,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 41
+            },
+            "valueCharged": 14
+        }
+    },
+    {
+        "size": 2,
+        "value1": 9,
+        "value0": {
+            "electricVehicle": {
+                "id": 28,
+                "maxCapacity": 24,
+                "minSOC": 20,
+                "chrDisPerHour": 20,
+                "favouriteChargingStation": {
+                    "id": 2,
+                    "name": "Aleea Buna Ziua nr 32",
+                    "plugIds": [
+                        2,
+                        3
+                    ]
+                },
+                "favouriteTimeSlots": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10
+                ],
+                "constraintsPenalty": [
+                    5,
+                    3
+                ],
+                "soccurrent": 41
+            },
+            "valueCharged": 14
+        }
+    }
+]

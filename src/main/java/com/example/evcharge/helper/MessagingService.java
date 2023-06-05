@@ -12,12 +12,12 @@ import java.util.List;
 @Service
 public class MessagingService {
 
-    @Autowired
-    private IMqttClient mqttClient;
+    /*@Autowired
+    private IMqttClient mqttClient;*/
 
     public List<ElectricVehicle> subscribe(final String topic) throws MqttException, InterruptedException {
         List<ElectricVehicle> electricVehicleList = new ArrayList<>();
-        System.out.println("Connection established!");
+        /*System.out.println("Connection established!");
         //schimba mai putin
         int i=10;
         while (i > 0) {
@@ -26,7 +26,7 @@ public class MessagingService {
                 System.out.println(msg.getId() + " -> " + new String(msg.getPayload()));
             });
         }
-        mqttClient.disconnect();
+        mqttClient.disconnect();*/
         return electricVehicleList;
     }
 }

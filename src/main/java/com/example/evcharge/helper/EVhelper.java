@@ -7,11 +7,15 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,7 +34,7 @@ public class EVhelper {
         return copyEVCV;
     }
 
-    public List<ElectricVehicleChargedValue[][]> generateRandom(Integer sampleSize, Integer plugs, Integer timeSlots, List<ElectricVehicle> electricVehicleList,ArrayList<Double> ediffList) {
+    public List<ElectricVehicleChargedValue[][]> generateRandom(Integer sampleSize, Integer plugs, Integer timeSlots, List<ElectricVehicle> electricVehicleList, ArrayList<Double> ediffList) {
         List<ElectricVehicleChargedValue[][]> initialPopulationRandomList = new ArrayList<>();
         for (int i = sampleSize; i > 0; i--) {
             ElectricVehicleChargedValue[][] solution = new ElectricVehicleChargedValue[plugs][timeSlots];
@@ -40,11 +44,26 @@ public class EVhelper {
                 Random random = new Random();
                 Integer index = random.nextInt(copyElectricVehicleList.size());
                 ElectricVehicle ev = copyElectricVehicleList.get(index);
-                int k = random.nextInt(plugs);
-                int j = random.nextInt(timeSlots);
+                int k=-1;
+                int j=-1;
+                for( int a= 2 * ev.getFavouriteChargingStation().getId()-2;a<=2 * ev.getFavouriteChargingStation().getId()-1;a++){
+                    for(int b = 0;b<ev.getFavouriteTimeSlots().size();b++ ){
+                        if(solution[a][ev.getFavouriteTimeSlots().get(b)-1] == null){
+                            k= a;
+                            j= ev.getFavouriteTimeSlots().get(b)-1;
+                            break;
+                        }
+                    }
+                }
+
+                if(k==-1 || j==-1){
+                    k = random.nextInt(plugs);
+                    j = random.nextInt(timeSlots);
+                }
+
                 if (solution[k][j] == null) {
-                    double minChargeCapacity = (double)(ev.getMinSOC() * ev.getMaxCapacity()) / 100;
-                    double currentValueCharged =(double) (ev.getSOCcurrent() * ev.getMaxCapacity()) / 100;
+                    double minChargeCapacity = (double) (ev.getMinSOC() * ev.getMaxCapacity()) / 100;
+                    double currentValueCharged = (double) (ev.getSOCcurrent() * ev.getMaxCapacity()) / 100;
                     double minBound = minChargeCapacity - currentValueCharged;
                     double maxBound = ev.getMaxCapacity() - currentValueCharged;
 
@@ -56,16 +75,16 @@ public class EVhelper {
                         maxBound = ev.getChrDisPerHour();
                     }
 
-                    if(ediffList.get(j) > 0){
+                    if (ediffList.get(j) > 0) {
                         minBound = 1;
-                    }else{
+                    } else {
                         maxBound = 0;
                     }
 
                     int valueCharged = 0;
-                    while(valueCharged==0){
+                    while (valueCharged == 0) {
                         Random rn = new Random();
-                        valueCharged = rn.nextInt((int) minBound, (int) maxBound+1);
+                        valueCharged = rn.nextInt((int) minBound, (int) maxBound + 1);
                     }
 
                     ElectricVehicleChargedValue electricVehicleChargedValue = new ElectricVehicleChargedValue(ev, valueCharged);
@@ -79,6 +98,7 @@ public class EVhelper {
     }
 
     // in the middle of the day, solar power conists aprox 70% of energy produces
+
     /**
      * @param timeSlots - the number of time slots for which we have to generate the differences between
      *                  the consumed energy and produced energy
@@ -96,7 +116,7 @@ public class EVhelper {
     }
 
     public List<ElectricVehicleChargedValue[][]> generateInitialSolutionSet(String strategy, Integer sampleSize, List<ChargingStation> chargingStationList,
-                                                                            Integer timeSlots, List<ElectricVehicle> electricVehicleList,ArrayList<Double> ediffList) {
+                                                                            Integer timeSlots, List<ElectricVehicle> electricVehicleList, ArrayList<Double> ediffList) {
         int rows = 0;
         for (ChargingStation cs : chargingStationList) {
             rows += cs.getPlugIds().size();
@@ -105,7 +125,7 @@ public class EVhelper {
         List<ElectricVehicleChargedValue[][]> initialPopulation = new ArrayList<>();
 
         if (strategy.equals("random")) {
-            initialPopulation = generateRandom(sampleSize, rows, timeSlots, electricVehicleList,ediffList);
+            initialPopulation = generateRandom(sampleSize, rows, timeSlots, electricVehicleList, ediffList);
         } else if (strategy.equals("ediff")) {
             ArrayList<Double> ediffMatrix = calculateEdiff(timeSlots);
            /* initialPopulation = generateEdiff(sampleSize, rows
@@ -116,6 +136,35 @@ public class EVhelper {
         return initialPopulation;
     }
 
+    public Double euclideanDistanceDiversity(List<ElectricVehicleChargedValue[][]> population) {
+        double euclideanDistance = 0.0;
+        for (int nr = 0; nr < population.size() - 1; nr++) {
+            int row = population.get(nr).length;
+            int col = population.get(nr)[0].length;
+            for (int i = 0; i < row; i++) {
+                for (int j = 0; j < col; j++) {
+                    if (population.get(nr)[i][j] != null) {
+                        int row2 = population.get(nr + 1).length;
+                        int col2 = population.get(nr + 1)[0].length;
+                        for (int a = 0; a < row; a++) {
+                            for (int b = 0; b < col; b++) {
+                                if (population.get(nr + 1)[a][b] != null) {
+                                    if (population.get(nr + 1)[a][b].getElectricVehicle().getId() == population.get(nr)[i][j].getElectricVehicle().getId()) {
+                                        euclideanDistance += (Math.abs(population.get(nr)[i][j].getValueCharged() - population.get(nr + 1)[a][b].getValueCharged()));
+                                        euclideanDistance += Math.abs(j - b);
+                                        if (population.get(nr + 1)[a][b].getElectricVehicle().getFavouriteChargingStation().getId() != population.get(nr)[i][j].getElectricVehicle().getFavouriteChargingStation().getId()) {
+                                            euclideanDistance++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return euclideanDistance;
+    }
 
     public Double fitnessFunction(ElectricVehicleChargedValue[][] electricVehicles, ArrayList<Double> ediff, ArrayList<Double> weightsForFitnessFunction, ArrayList<Double> weightsForPenalty) {
         double score = 0.0;
@@ -123,15 +172,17 @@ public class EVhelper {
                 .limit(electricVehicles[0].length).collect(Collectors.toCollection(ArrayList::new));
         Double violation = 0.0;
         Double CV = 0.0;
+        int charginStationViolation = 0;
         for (int row = 0; row < electricVehicles.length; row++) {
             for (int col = 0; col < electricVehicles[row].length; col++) {
                 if (electricVehicles[row][col] != null) {
 
-                    Double newSum=sumOnColumns.get(col)+electricVehicles[row][col].getValueCharged();
-                    sumOnColumns.set(col,newSum);
+                    Double newSum = sumOnColumns.get(col) + electricVehicles[row][col].getValueCharged();
+                    sumOnColumns.set(col, newSum);
                     if (!electricVehicles[row][col].getElectricVehicle().getFavouriteChargingStation().getPlugIds().contains(row)) {
                         violation++;
                         CV += electricVehicles[row][col].getElectricVehicle().getConstraintsPenalty().get(0);
+                        charginStationViolation += electricVehicles[row][col].getElectricVehicle().getConstraintsPenalty().get(0);
                     }
                     if (!electricVehicles[row][col].getElectricVehicle().getFavouriteTimeSlots().contains(col + 1)) {
                         violation++;
@@ -141,14 +192,16 @@ public class EVhelper {
             }
         }
         Double ediffBalance = 0.0;
-        for (int m=0;m<ediff.size();m++) {
-            ediffBalance = ediffBalance + Math.abs((ediff.get(m)-sumOnColumns.get(m))) ;
+        for (int m = 0; m < ediff.size(); m++) {
+            ediffBalance = ediffBalance + Math.abs((ediff.get(m) - sumOnColumns.get(m)));
         }
         if (weightsForFitnessFunction.isEmpty()) {
             score = ediffBalance + (weightsForPenalty.get(0) * CV + weightsForPenalty.get(1) * violation);
         } else {
             score = weightsForFitnessFunction.get(0) * Math.abs(ediffBalance) + weightsForFitnessFunction.get(1) * (weightsForPenalty.get(0) * CV + weightsForPenalty.get(1) * violation);
         }
+        System.out.println("Chargin Station Violation: " + charginStationViolation);
+        System.out.println("Time violation: " + (CV - charginStationViolation));
         return score;
     }
 
@@ -234,7 +287,7 @@ public class EVhelper {
     }
 
     public ElectricVehicleChargedValue[][] bubbleNetAttackingIdWise(final ElectricVehicleChargedValue[][] Xbest, ElectricVehicleChargedValue[][] Xcurrent,
-                                                                         Integer timeSlots, Integer plugs) {
+                                                                    Integer timeSlots, Integer plugs) {
         Random random = new Random();
         double l = random.nextDouble(-1, 1);
         for (int i = 0; i < plugs; i++) {
@@ -262,15 +315,16 @@ public class EVhelper {
         }
         return Xcurrent;
     }
+
     private ElectricVehicleChargedValue[][] checkSearchAgentGoesBeyondSearchSpace(ElectricVehicleChargedValue[][] solution, Integer plugs, Integer timeSlots, ArrayList<Double> ediffList) {
         for (int i = 0; i < plugs; i++) {
             for (int j = 0; j < timeSlots; j++) {
                 if (solution[i][j] != null) {
                     //check if value is not 0
-                    if(solution[i][j].getValueCharged()==0){
-                        if(ediffList.get(j)>0) {
+                    if (solution[i][j].getValueCharged() == 0) {
+                        if (ediffList.get(j) > 0) {
                             solution[i][j].setValueCharged(1);
-                        }else{
+                        } else {
                             solution[i][j].setValueCharged(-1);
                         }
                     }
@@ -320,11 +374,11 @@ public class EVhelper {
     }
 
     public ElectricVehicleChargedValue[][] whaleOptimizationAlgorithm(int maxt, int plugs, int timeSlots, List<ChargingStation> chargingStationList,
-                                                                      List<ElectricVehicle> electricVehicleList,ArrayList<Double> ediffList) throws IOException {
-
-        List<ElectricVehicleChargedValue[][]> initialPopulation = generateInitialSolutionSet("random", 20, chargingStationList,
-                timeSlots, electricVehicleList,ediffList);
-
+                                                                      List<ElectricVehicle> electricVehicleList, ArrayList<Double> ediffList,Integer sampleSize) throws IOException {
+        Instant start = Instant.now();
+        int iterationsSinceLastChange = 0;
+        List<ElectricVehicleChargedValue[][]> initialPopulation = generateInitialSolutionSet("random", sampleSize, chargingStationList,
+                timeSlots, electricVehicleList, ediffList);
         ArrayList<Double> weightsForFitness = new ArrayList<>(Arrays.asList(0.6, 0.4));
         ArrayList<Double> weightsForPenalty = new ArrayList<>(Arrays.asList(2.0, 2.0));
 
@@ -334,6 +388,7 @@ public class EVhelper {
 
         ArrayList<Double> bestFitnessAmongEachIteration = new ArrayList<>();
         List<ElectricVehicleChargedValue[][]> bestSolutionEachIteration = new ArrayList<>();
+        ArrayList<Double> euclideanDistanceForPopulationEachIteration = new ArrayList<>();
 
         for (ElectricVehicleChargedValue[][] solution : initialPopulation) {
             Double currentScore = fitnessFunction(solution, ediffList, weightsForFitness, weightsForPenalty);
@@ -352,9 +407,10 @@ public class EVhelper {
         }
         bestFitnessAmongEachIteration.add(minScore);
         bestSolutionEachIteration.add(this.deepCopy(plugs, timeSlots, Xbest));
+        euclideanDistanceForPopulationEachIteration.add(euclideanDistanceDiversity(initialPopulation));
         System.out.println("Best solution initially is " + Arrays.deepToString(Xbest));
         System.out.println("Fitness score is: " + fitnessFunction(Xbest, ediffList, weightsForFitness, weightsForPenalty));
-
+        System.out.println("Euclidean distance of initial population is: " + euclideanDistanceDiversity(initialPopulation));
         int t = 0;
         while (t < maxt) {
             double a = (double) (2 * (1 - t / maxt));
@@ -384,46 +440,51 @@ public class EVhelper {
 
             // check if any search agent goes beyond search space and amend it
             initialPopulation = initialPopulation.stream().map(solution -> checkSearchAgentGoesBeyondSearchSpace(solution, plugs, timeSlots, ediffList)).collect(Collectors.toList());
-
-            double minScoreEachIteration = Double.MAX_VALUE;
-            ElectricVehicleChargedValue[][] XbestEachIteration = new ElectricVehicleChargedValue[plugs][timeSlots];
+            euclideanDistanceForPopulationEachIteration.add(euclideanDistanceDiversity(initialPopulation));
             for (ElectricVehicleChargedValue[][] solution : initialPopulation) {
                 Double currentScoreAfterUpdates = fitnessFunction(solution, ediffList, weightsForFitness, weightsForPenalty);
                 if (currentScoreAfterUpdates < minScore) {
                     Xbest = this.deepCopy(plugs, timeSlots, solution);
                     minScore = currentScoreAfterUpdates;
                 }
-                if (currentScoreAfterUpdates < minScoreEachIteration) {
-                    XbestEachIteration = this.deepCopy(plugs, timeSlots, solution);
-                    minScoreEachIteration = currentScoreAfterUpdates;
-                }
             }
-            bestFitnessAmongEachIteration.add(minScoreEachIteration);
-            bestSolutionEachIteration.add(XbestEachIteration);
+            if (minScore == bestFitnessAmongEachIteration.get(bestFitnessAmongEachIteration.size() - 1)) {
+                iterationsSinceLastChange++;
+            } else {
+                iterationsSinceLastChange = 0;
+            }
+            bestFitnessAmongEachIteration.add(minScore);
+            bestSolutionEachIteration.add(this.deepCopy(plugs, timeSlots, Xbest));
             t++;
+            if (iterationsSinceLastChange > 10) {
+                break;
+            }
         }
 
+        Instant finish = Instant.now();
+        long timeElapsed = Duration.between(start, finish).toMillis();
+        System.out.println("Time elapsed: "+timeElapsed);
         System.out.println("Best final solution is " + Arrays.deepToString(Xbest));
         System.out.println("Fitness score for best solution is: " + fitnessFunction(Xbest, ediffList, weightsForFitness, weightsForPenalty));
-
-        this.printFitnessAndSolutionsInFile(bestFitnessAmongEachIteration, bestSolutionEachIteration);
-        ArrayList<Double> ediffNew = this.calculateNewEdiff(Xbest,ediffList,plugs,timeSlots);
+        System.out.println("Euclidean distance of initial population is: " + euclideanDistanceDiversity(initialPopulation));
+        this.printFitnessAndSolutionsInFile(bestFitnessAmongEachIteration);
+        this.printEuclideanDistance(euclideanDistanceForPopulationEachIteration);
+        ArrayList<Double> ediffNew = this.calculateNewEdiff(Xbest, ediffList, plugs, timeSlots);
         ArrayList<Integer> valueChargedByCars = new ArrayList<>();
-        for(int i = 0; i < timeSlots; i++){
+        for (int i = 0; i < timeSlots; i++) {
             int sumCol = 0;
-            for(int j = 0; j < plugs; j++){
-                if(Xbest[j][i]!=null){
+            for (int j = 0; j < plugs; j++) {
+                if (Xbest[j][i] != null) {
                     sumCol += Xbest[j][i].getValueCharged();
                 }
             }
             valueChargedByCars.add(sumCol);
         }
-        this.printEdiffOldAndNewGraphic(ediffList,ediffNew,valueChargedByCars);
+        this.printEdiffOldAndNewGraphic(ediffList, ediffNew, valueChargedByCars);
         return Xbest;
     }
 
-    private void printFitnessAndSolutionsInFile(ArrayList<Double> bestFitnessAmongEachIteration,
-                                                List<ElectricVehicleChargedValue[][]> bestSolutionEachIteration) throws IOException {
+    private void printFitnessAndSolutionsInFile(ArrayList<Double> bestFitnessAmongEachIteration) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet spreadsheet = workbook.createSheet("FitnessValues");
         XSSFRow row;
@@ -436,13 +497,13 @@ public class EVhelper {
         SimpleDateFormat sdf = new SimpleDateFormat("dd_M_yyyy_hh_mm_ss");
 
         FileOutputStream out = new FileOutputStream(
-                new File("E:\\Facultate\\UTCN\\An4\\Licenta\\FitnessValue" + sdf.format(new Date()) + ".xlsx"));
+                new File("FitnessValue" + sdf.format(new Date()) + ".xlsx"));
 
         workbook.write(out);
         out.close();
     }
 
-    private void printEdiffOldAndNewGraphic(ArrayList<Double> ediffOld,ArrayList<Double> ediffNew,ArrayList<Integer> valueChargedByCars) throws IOException {
+    private void printEdiffOldAndNewGraphic(ArrayList<Double> ediffOld, ArrayList<Double> ediffNew, ArrayList<Integer> valueChargedByCars) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet spreadsheet = workbook.createSheet("EdiffValues");
         XSSFRow row;
@@ -454,7 +515,7 @@ public class EVhelper {
         Cell cell3 = row.createCell(2);
         cell3.setCellValue("Value charged in cars");
         for (int i = 0; i < ediffOld.size(); i++) {
-            row = spreadsheet.createRow(i+1);
+            row = spreadsheet.createRow(i + 1);
             Cell cellOld = row.createCell(0);
             Cell cellNew = row.createCell(1);
             Cell cellCar = row.createCell(2);
@@ -465,26 +526,45 @@ public class EVhelper {
         SimpleDateFormat sdf = new SimpleDateFormat("dd_M_yyyy_hh_mm_ss");
 
         FileOutputStream out = new FileOutputStream(
-                new File("E:\\Facultate\\UTCN\\An4\\Licenta\\EdiffValues" + sdf.format(new Date()) + ".xlsx"));
+                new File("EdiffValues" + sdf.format(new Date()) + ".xlsx"));
 
         workbook.write(out);
         out.close();
 
     }
 
-    private ArrayList<Double> calculateNewEdiff(ElectricVehicleChargedValue[][] solution,ArrayList<Double> ediffOld,Integer plugs,Integer timeSlots){
+    private ArrayList<Double> calculateNewEdiff(ElectricVehicleChargedValue[][] solution, ArrayList<Double> ediffOld, Integer plugs, Integer timeSlots) {
         ArrayList<Double> newEdiff = new ArrayList<>();
-        for(int i = 0; i < timeSlots; i++){
+        for (int i = 0; i < timeSlots; i++) {
             double sumCol = 0;
-            for(int j = 0; j < plugs; j++){
-                if(solution[j][i]!=null){
+            for (int j = 0; j < plugs; j++) {
+                if (solution[j][i] != null) {
                     sumCol += solution[j][i].getValueCharged();
                 }
             }
-            sumCol = ediffOld.get(i) -sumCol;
+            sumCol = ediffOld.get(i) - sumCol;
             newEdiff.add(sumCol);
         }
         return newEdiff;
+    }
+
+    private void printEuclideanDistance(ArrayList<Double> euclideanDistanceForPopulationEachIteration) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet spreadsheet = workbook.createSheet("EuclideanDistance");
+        XSSFRow row;
+        for (int i = 0; i < euclideanDistanceForPopulationEachIteration.size(); i++) {
+            row = spreadsheet.createRow(i);
+            Cell cell = row.createCell(0);
+            cell.setCellValue(euclideanDistanceForPopulationEachIteration.get(i));
+
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("dd_M_yyyy_hh_mm_ss");
+
+        FileOutputStream out = new FileOutputStream(
+                new File("EuclideanDistance" + sdf.format(new Date()) + ".xlsx"));
+
+        workbook.write(out);
+        out.close();
     }
 }
 

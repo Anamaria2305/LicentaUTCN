@@ -19,13 +19,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class DataGathering{
 
 
-    @Autowired
-    private  MessagingService messagingService;
+   /* @Autowired
+    private  MessagingService messagingService;*/
 
     @Autowired
     private ChargingStationsService chargingStationsService;
@@ -35,12 +36,17 @@ public class DataGathering{
 
     private   List<ElectricVehicle> electricVehicleList;
 
-    public ArrayList<Double> collectEdiff(Integer plugs, Integer startTime){
+    public ArrayList<Double> collectEdiff(Integer plugs, Integer startTime, String chargeType){
         ArrayList<Double> ediff = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DATE, -1);
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        String url="https://www.caiso.com/outlook/SP/History/"+dateFormat.format(cal.getTime())+"/fuelsource.csv";
+        String url = "";
+        if(chargeType.equals("charge")){
+            url="https://www.caiso.com/outlook/SP/History/"+dateFormat.format(cal.getTime())+"/fuelsource.csv";
+        }else{
+            url="https://www.caiso.com/outlook/SP/History/"+dateFormat.format(cal.getTime())+"/demand.csv";
+        }
         try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
              FileOutputStream fileOutputStream = new FileOutputStream("Supply.csv")) {
             byte dataBuffer[] = new byte[1024];
@@ -52,12 +58,12 @@ public class DataGathering{
             int end = start + 6 *(plugs-1);
 
             String line;
-            try (BufferedReader br = new BufferedReader(new FileReader("E:\\Facultate\\UTCN\\An4\\Licenta\\Supply.csv"))) {
+            try (BufferedReader br = new BufferedReader(new FileReader("Supply.csv"))) {
                 int index=0;
                 while(br.readLine()!=null || index <=end){
                     line = br.readLine();
                     if(start<=index && end>=index && index % 6 == 0){
-                        Double value = Double.parseDouble(line.split(",")[1])/100;
+                        Double value = Double.parseDouble(line.split(",")[1])/170;
                         ediff.add(value);
                     }
                     index++;
@@ -72,17 +78,18 @@ public class DataGathering{
         return ediff;
     }
 
-    public  List<ElectricVehicle> collectData(){
+    public  List<ElectricVehicle> collectData(Integer maxValue){
         final String topic = "charging_stations_real_time_data";
         //final String topic = "obd_real_time_data";
-        try {
+        /*try {
             electricVehicleList = messagingService.subscribe(topic);
         } catch (MqttException | InterruptedException e) {
             e.printStackTrace();
         }
         if(electricVehicleList.isEmpty()){
-            electricVehicleList = electricVehicleService.getAll();
-        }
+
+        }*/
+        electricVehicleList = electricVehicleService.getAll().stream().limit(maxValue).collect(Collectors.toList());
         return electricVehicleList;
     }
 
