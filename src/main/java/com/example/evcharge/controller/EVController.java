@@ -1,21 +1,16 @@
 package com.example.evcharge.controller;
 
 
-import com.example.evcharge.helper.ChargingStationsService;
-import com.example.evcharge.helper.DataGathering;
-import com.example.evcharge.helper.EVhelper;
-import com.example.evcharge.helper.WhaleSolutionParser;
+import com.example.evcharge.helper.*;
 import com.example.evcharge.models.ChargingStation;
 import com.example.evcharge.models.ElectricVehicle;
-import com.example.evcharge.models.ElectricVehicleChargedValue;
-import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -31,6 +26,8 @@ public class EVController {
     @Autowired
     WhaleSolutionParser whaleSolutionParser;
 
+    @Autowired
+    ExperimentClass experimentClass;
     private EVhelper eVhelper = new EVhelper();
 
     @RequestMapping(method = RequestMethod.GET, value = "/allev")
@@ -53,7 +50,7 @@ public class EVController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/sol")
     @ResponseBody
-    public List<Pair<ElectricVehicleChargedValue, Integer>> getSol(@RequestParam(name = "timSlots") Integer timSlots, @RequestParam(name = "startTime") Integer startTime,@RequestParam(name = "chargeType") String chargeType
+    public List<List<Object>> getSol(@RequestParam(name = "timeSlots") Integer timeSlots, @RequestParam(name = "startTime") Integer startTime,@RequestParam(name = "chargeType") String chargeType
     ,@RequestParam(name = "maxCars") Integer maxCars,@RequestParam(name = "sampleSize") Integer sampleSize) throws IOException {
         List<ChargingStation> chargingStationList = chargingStationsService.getAll();
         int plugs =0;
@@ -61,10 +58,15 @@ public class EVController {
             plugs+=cs.getPlugIds().size();
         }
         List<ElectricVehicle> electricVehicleList = dataGathering.collectData(maxCars);
-        ArrayList<Double>ediffList = dataGathering.collectEdiff(timSlots, startTime,chargeType);
-        return whaleSolutionParser.parseSolution(eVhelper.whaleOptimizationAlgorithm(100, plugs, timSlots, chargingStationList, electricVehicleList, ediffList,sampleSize));
+        ArrayList<Double>ediffList = dataGathering.collectEdiff(timeSlots, startTime,chargeType);
+        return whaleSolutionParser.parseSolution(eVhelper.whaleOptimizationAlgorithm(100, plugs, timeSlots, chargingStationList, electricVehicleList, ediffList,sampleSize,chargeType),startTime);
     }
 
-
+    @RequestMapping(method = RequestMethod.GET, value = "/exp")
+    @ResponseBody
+    public List<List<Object>> getExperiment(@RequestParam(name = "timeSlots") Integer timeSlots, @RequestParam(name = "startTime") Integer startTime,@RequestParam(name = "chargeType") String chargeType
+            ,@RequestParam(name = "maxCars") Integer cars,Integer chargingStations) throws IOException {
+        return experimentClass.getExperiment(chargingStations,timeSlots,cars,startTime,chargeType);
+    }
 
 }

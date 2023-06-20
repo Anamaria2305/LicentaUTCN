@@ -7,8 +7,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,19 +42,19 @@ public class EVhelper {
                 Random random = new Random();
                 Integer index = random.nextInt(copyElectricVehicleList.size());
                 ElectricVehicle ev = copyElectricVehicleList.get(index);
-                int k=-1;
-                int j=-1;
-                for( int a= 2 * ev.getFavouriteChargingStation().getId()-2;a<=2 * ev.getFavouriteChargingStation().getId()-1;a++){
-                    for(int b = 0;b<ev.getFavouriteTimeSlots().size();b++ ){
-                        if(solution[a][ev.getFavouriteTimeSlots().get(b)-1] == null){
-                            k= a;
-                            j= ev.getFavouriteTimeSlots().get(b)-1;
+                int k = -1;
+                int j = -1;
+                for (int a = 2 * ev.getFavouriteChargingStation().getId() - 2; a <= 2 * ev.getFavouriteChargingStation().getId() - 1; a++) {
+                    for (int b = 0; b < ev.getFavouriteTimeSlots().size(); b++) {
+                        if (solution[a][ev.getFavouriteTimeSlots().get(b) - 1] == null) {
+                            k = a;
+                            j = ev.getFavouriteTimeSlots().get(b) - 1;
                             break;
                         }
                     }
                 }
 
-                if(k==-1 || j==-1){
+                if (k == -1 || j == -1) {
                     k = random.nextInt(plugs);
                     j = random.nextInt(timeSlots);
                 }
@@ -138,6 +136,7 @@ public class EVhelper {
 
     public Double euclideanDistanceDiversity(List<ElectricVehicleChargedValue[][]> population) {
         double euclideanDistance = 0.0;
+        double maxim = Double.MIN_VALUE;
         for (int nr = 0; nr < population.size() - 1; nr++) {
             int row = population.get(nr).length;
             int col = population.get(nr)[0].length;
@@ -150,11 +149,16 @@ public class EVhelper {
                             for (int b = 0; b < col; b++) {
                                 if (population.get(nr + 1)[a][b] != null) {
                                     if (population.get(nr + 1)[a][b].getElectricVehicle().getId() == population.get(nr)[i][j].getElectricVehicle().getId()) {
-                                        euclideanDistance += (Math.abs(population.get(nr)[i][j].getValueCharged() - population.get(nr + 1)[a][b].getValueCharged()));
-                                        euclideanDistance += Math.abs(j - b);
+                                        /*euclideanDistance += (Math.abs(population.get(nr)[i][j].getValueCharged() - population.get(nr + 1)[a][b].getValueCharged()));
+                                        euclideanDistance += Math.abs(j - b);*/
+                                        double someValue = Math.sqrt(Math.pow(Math.abs(j - b),2) + Math.pow(Math.abs(population.get(nr)[i][j].getValueCharged() - population.get(nr + 1)[a][b].getValueCharged()),2));
+                                        if(someValue > maxim){
+                                            maxim = someValue;
+                                        }
+/*
                                         if (population.get(nr + 1)[a][b].getElectricVehicle().getFavouriteChargingStation().getId() != population.get(nr)[i][j].getElectricVehicle().getFavouriteChargingStation().getId()) {
                                             euclideanDistance++;
-                                        }
+                                        }*/
                                     }
                                 }
                             }
@@ -163,7 +167,8 @@ public class EVhelper {
                 }
             }
         }
-        return euclideanDistance;
+       // return Math.sqrt(euclideanDistance);
+        return maxim;
     }
 
     public Double fitnessFunction(ElectricVehicleChargedValue[][] electricVehicles, ArrayList<Double> ediff, ArrayList<Double> weightsForFitnessFunction, ArrayList<Double> weightsForPenalty) {
@@ -205,6 +210,38 @@ public class EVhelper {
         return score;
     }
 
+    public List<Integer> constraintCalculation(ElectricVehicleChargedValue[][] electricVehicles, ArrayList<Double> ediff, ArrayList<Double> weightsForFitnessFunction, ArrayList<Double> weightsForPenalty) {
+        double score = 0.0;
+        ArrayList<Double> sumOnColumns = Stream.generate(() -> 0.0)
+                .limit(electricVehicles[0].length).collect(Collectors.toCollection(ArrayList::new));
+        Integer violation = 0;
+        Double CV = 0.0;
+        int charginStationViolation = 0;
+        for (int row = 0; row < electricVehicles.length; row++) {
+            for (int col = 0; col < electricVehicles[row].length; col++) {
+                if (electricVehicles[row][col] != null) {
+
+                    Double newSum = sumOnColumns.get(col) + electricVehicles[row][col].getValueCharged();
+                    sumOnColumns.set(col, newSum);
+                    if (!electricVehicles[row][col].getElectricVehicle().getFavouriteChargingStation().getPlugIds().contains(row)) {
+                        violation++;
+                        CV += electricVehicles[row][col].getElectricVehicle().getConstraintsPenalty().get(0);
+                        charginStationViolation += electricVehicles[row][col].getElectricVehicle().getConstraintsPenalty().get(0);
+                    }
+                    if (!electricVehicles[row][col].getElectricVehicle().getFavouriteTimeSlots().contains(col + 1)) {
+                        violation++;
+                        CV += electricVehicles[row][col].getElectricVehicle().getConstraintsPenalty().get(1);
+                    }
+                }
+            }
+        }
+        ArrayList<Integer> constraintsFinal = new ArrayList<>();
+        constraintsFinal.add(violation);
+        constraintsFinal.add(charginStationViolation);
+        constraintsFinal.add((int) (CV - charginStationViolation));
+        return constraintsFinal;
+    }
+
     /**
      * @param C
      * @param A
@@ -215,19 +252,23 @@ public class EVhelper {
      * updating the current one
      */
     public ElectricVehicleChargedValue[][] encirclingPreysearchForPreyElementWise(Double C, Double A, ElectricVehicleChargedValue[][] XbestRand, ElectricVehicleChargedValue[][] Xcurrent,
-                                                                                  Integer timeSlots, Integer plugs) {
+                                                                                  Integer timeSlots, Integer plugs, String chargeType) {
         double[][] D = new double[plugs][timeSlots];
         for (int i = 0; i < plugs; i++) {
             for (int j = 0; j < timeSlots; j++) {
                 if (XbestRand[i][j] != null && Xcurrent[i][j] != null) {
-                    D[i][j] = Math.abs(C * XbestRand[i][j].getValueCharged() - Xcurrent[i][j].getValueCharged());
+                    D[i][j] = C * XbestRand[i][j].getValueCharged() - Xcurrent[i][j].getValueCharged();
                 }
             }
         }
         for (int k = 0; k < plugs; k++) {
             for (int l = 0; l < timeSlots; l++) {
                 if (XbestRand[k][l] != null && D[k][l] != 0 && Xcurrent[k][l] != null) {
-                    Xcurrent[k][l].setValueCharged((int) (XbestRand[k][l].getValueCharged() + A * D[k][l] + 0.5));
+                    if (!chargeType.equals("charge") && (int) (XbestRand[k][l].getValueCharged() + A * D[k][l] + 0.5) > 0) {
+                        Xcurrent[k][l].setValueCharged((-1) * (int) (XbestRand[k][l].getValueCharged() + A * D[k][l] + 0.5));
+                    } else {
+                        Xcurrent[k][l].setValueCharged((int) (XbestRand[k][l].getValueCharged() + A * D[k][l] + 0.5));
+                    }
                 }
             }
         }
@@ -235,12 +276,15 @@ public class EVhelper {
     }
 
     public ElectricVehicleChargedValue[][] bubbleNetAttackingElementWise(final ElectricVehicleChargedValue[][] Xbest, ElectricVehicleChargedValue[][] Xcurrent,
-                                                                         Integer timeSlots, Integer plugs) {
+                                                                         Integer timeSlots, Integer plugs, String chargeType) {
+        int chargeConstant = 1;
+        if (!chargeType.equals("charge"))
+            chargeConstant = -1;
         double[][] D = new double[plugs][timeSlots];
         for (int i = 0; i < plugs; i++) {
             for (int j = 0; j < timeSlots; j++) {
                 if (Xbest[i][j] != null && Xcurrent[i][j] != null) {
-                    D[i][j] = Math.abs(Xbest[i][j].getValueCharged() - Xcurrent[i][j].getValueCharged());
+                    D[i][j] = Xbest[i][j].getValueCharged() - Xcurrent[i][j].getValueCharged();
                 }
             }
         }
@@ -249,7 +293,11 @@ public class EVhelper {
         for (int k = 0; k < plugs; k++) {
             for (int m = 0; m < timeSlots; m++) {
                 if (Xbest[k][m] != null && D[k][m] != 0 && Xcurrent[k][m] != null) {
-                    Xcurrent[k][m].setValueCharged((int) (D[k][m] * Math.exp(l) * Math.cos(2 * Math.PI + l) + Xbest[k][m].getValueCharged() + 0.5));
+                    if (!chargeType.equals("charge") && (int) (D[k][m] * Math.exp(l) * Math.cos(2 * Math.PI + l) + Xbest[k][m].getValueCharged() + 0.5) > 0) {
+                        Xcurrent[k][m].setValueCharged((-1) * (int) (D[k][m] * Math.exp(l) * Math.cos(2 * Math.PI + l) + Xbest[k][m].getValueCharged() + 0.5));
+                    } else {
+                        Xcurrent[k][m].setValueCharged((int) (D[k][m] * Math.exp(l) * Math.cos(2 * Math.PI + l) + Xbest[k][m].getValueCharged() + 0.5));
+                    }
                 }
             }
         }
@@ -317,64 +365,98 @@ public class EVhelper {
     }
 
     private ElectricVehicleChargedValue[][] checkSearchAgentGoesBeyondSearchSpace(ElectricVehicleChargedValue[][] solution, Integer plugs, Integer timeSlots, ArrayList<Double> ediffList) {
-        for (int i = 0; i < plugs; i++) {
-            for (int j = 0; j < timeSlots; j++) {
-                if (solution[i][j] != null) {
-                    //check if value is not 0
-                    if (solution[i][j].getValueCharged() == 0) {
-                        if (ediffList.get(j) > 0) {
-                            solution[i][j].setValueCharged(1);
-                        } else {
-                            solution[i][j].setValueCharged(-1);
+        boolean ok = false;
+
+        while (!ok) {
+            ok = true;
+            //check if there is enough energy or gives too much from  cars
+            for (int a = 0; a < timeSlots; a++) {
+                int energyForCars = 0;
+                for (int b = 0; b < plugs; b++) {
+                    if (solution[b][a] != null) {
+                        energyForCars = energyForCars + solution[b][a].getValueCharged();
+                    }
+                }
+
+
+                if (ediffList.get(a) > 0 && ediffList.get(a) < energyForCars) {
+                    ok = false;
+                    while (ediffList.get(a) < energyForCars) {
+                        for (int c = 0; c < plugs; c++) {
+                            if (solution[c][a] != null) {
+                                solution[c][a].setValueCharged(solution[c][a].getValueCharged() - 1);
+                                energyForCars--;
+                            }
                         }
                     }
-                    //check if there is enough energy
-                    for (int a = 0; a < timeSlots; a++) {
-                        int energyForCars = 0;
-                        for (int b = 0; b < plugs; b++) {
-                            if (solution[b][a] != null) {
-                                energyForCars = energyForCars + solution[b][a].getValueCharged();
+                }
+
+                if (ediffList.get(a) < 0 && ediffList.get(a) > energyForCars) {
+                    System.out.println("EDiif de a "+ediffList.get(a) +" energy for cars "+energyForCars);
+                    ok = false;
+                    while (ediffList.get(a) > energyForCars) {
+                        for (int c = 0; c < plugs; c++) {
+                            if (solution[c][a] != null) {
+                                solution[c][a].setValueCharged(solution[c][a].getValueCharged() + 1);
+                                energyForCars++;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            for (int i = 0; i < plugs; i++) {
+                for (int j = 0; j < timeSlots; j++) {
+
+
+                    if (solution[i][j] != null) {
+                        //check if value is not 0
+                        if (solution[i][j].getValueCharged() == 0) {
+                            ok = false;
+                            if (ediffList.get(j) > 0) {
+                                solution[i][j].setValueCharged(1);
+                            } else {
+                                solution[i][j].setValueCharged(-1);
                             }
                         }
 
-                        if (ediffList.get(a) > 0 && ediffList.get(a) < energyForCars) {
-                            while (ediffList.get(a) < energyForCars) {
-                                for (int c = 0; c < plugs; c++) {
-                                    if (solution[c][a] != null) {
-                                        solution[c][a].setValueCharged(solution[c][a].getValueCharged() - 1);
-                                        energyForCars--;
-                                    }
-                                }
+                        Integer valueCharged = solution[i][j].getValueCharged();
+                        //check if value charged is greater than it capacity per hour
+                        if (Math.abs(valueCharged) > solution[i][j].getElectricVehicle().getChrDisPerHour()) {
+                            ok = false;
+                            if (valueCharged < 0) {
+                                solution[i][j].setValueCharged(-1 * solution[i][j].getElectricVehicle().getChrDisPerHour());
+                            } else {
+                                solution[i][j].setValueCharged(solution[i][j].getElectricVehicle().getChrDisPerHour());
                             }
                         }
-                    }
-                    Integer valueCharged = solution[i][j].getValueCharged();
-                    //check if value charged is greater than it capacity per hour
-                    if (Math.abs(valueCharged) > solution[i][j].getElectricVehicle().getChrDisPerHour()) {
-                        if (valueCharged < 0) {
-                            solution[i][j].setValueCharged(-1 * solution[i][j].getElectricVehicle().getChrDisPerHour());
-                        } else {
-                            solution[i][j].setValueCharged(solution[i][j].getElectricVehicle().getChrDisPerHour());
+                        //check if the soc goes above max or beyond min
+                        Integer valueCharged2 = solution[i][j].getValueCharged();
+                        double minChargeCapacity = (double) solution[i][j].getElectricVehicle().getSOCcurrent() * solution[i][j].getElectricVehicle().getMinSOC() / 100;
+                        double currentValueCharged = (double) solution[i][j].getElectricVehicle().getSOCcurrent() * solution[i][j].getElectricVehicle().getMaxCapacity() / 100;
+                        if ((valueCharged2 + currentValueCharged) < minChargeCapacity) {
+                            ok = false;
+                            solution[i][j].setValueCharged((int) (minChargeCapacity - currentValueCharged));
+                        }
+                        if ((valueCharged2 + currentValueCharged) > solution[i][j].getElectricVehicle().getMaxCapacity()) {
+                            ok = false;
+                            solution[i][j].setValueCharged((int) (solution[i][j].getElectricVehicle().getMaxCapacity() - currentValueCharged));
                         }
                     }
-                    //check if the soc goes above max or beyond min
-                    Integer valueCharged2 = solution[i][j].getValueCharged();
-                    double minChargeCapacity = (double) solution[i][j].getElectricVehicle().getSOCcurrent() * solution[i][j].getElectricVehicle().getMinSOC() / 100;
-                    double currentValueCharged = (double) solution[i][j].getElectricVehicle().getSOCcurrent() * solution[i][j].getElectricVehicle().getMaxCapacity() / 100;
-                    if ((valueCharged2 + currentValueCharged) < minChargeCapacity) {
-                        solution[i][j].setValueCharged((int) (minChargeCapacity - currentValueCharged));
-                    }
-                    if ((valueCharged2 + currentValueCharged) > solution[i][j].getElectricVehicle().getMaxCapacity()) {
-                        solution[i][j].setValueCharged((int) (solution[i][j].getElectricVehicle().getMaxCapacity() - currentValueCharged));
-                    }
+
+
                 }
             }
+
+
         }
         return solution;
     }
 
-    public ElectricVehicleChargedValue[][] whaleOptimizationAlgorithm(int maxt, int plugs, int timeSlots, List<ChargingStation> chargingStationList,
-                                                                      List<ElectricVehicle> electricVehicleList, ArrayList<Double> ediffList,Integer sampleSize) throws IOException {
+    public List<List<Object>> whaleOptimizationAlgorithm(int maxt, int plugs, int timeSlots, List<ChargingStation> chargingStationList,
+                                                         List<ElectricVehicle> electricVehicleList, ArrayList<Double> ediffList, Integer sampleSize, String chargeType) throws IOException {
+        List<List<Object>> listOfLists = new ArrayList<>();
         Instant start = Instant.now();
         int iterationsSinceLastChange = 0;
         List<ElectricVehicleChargedValue[][]> initialPopulation = generateInitialSolutionSet("random", sampleSize, chargingStationList,
@@ -389,7 +471,7 @@ public class EVhelper {
         ArrayList<Double> bestFitnessAmongEachIteration = new ArrayList<>();
         List<ElectricVehicleChargedValue[][]> bestSolutionEachIteration = new ArrayList<>();
         ArrayList<Double> euclideanDistanceForPopulationEachIteration = new ArrayList<>();
-
+        initialPopulation = initialPopulation.stream().map(solution -> checkSearchAgentGoesBeyondSearchSpace(solution, plugs, timeSlots, ediffList)).collect(Collectors.toList());
         for (ElectricVehicleChargedValue[][] solution : initialPopulation) {
             Double currentScore = fitnessFunction(solution, ediffList, weightsForFitness, weightsForPenalty);
             if (currentScore < minScore) {
@@ -422,17 +504,17 @@ public class EVhelper {
                 Double p = r.nextDouble(0, 1);
                 if (p < 0.5) {
                     if (Math.abs(A) < 1) {
-                        solution = encirclingPreysearchForPreyElementWise(C, A, Xbest, solution, timeSlots, plugs);
+                        solution = encirclingPreysearchForPreyElementWise(C, A, Xbest, solution, timeSlots, plugs, chargeType);
                         //solution = encirclingPreysearchForPreyIdWise(C, A, Xbest, solution, timeSlots, plugs);
                     } else {
                         Integer index = r.nextInt(initialPopulation.size());
                         ElectricVehicleChargedValue[][] Xrand = initialPopulation.get(index);
                         ElectricVehicleChargedValue[][] Xrandcopy = this.deepCopy(plugs, timeSlots, Xrand);
-                        solution = encirclingPreysearchForPreyElementWise(C, A, Xrandcopy, solution, timeSlots, plugs);
+                        solution = encirclingPreysearchForPreyElementWise(C, A, Xrandcopy, solution, timeSlots, plugs, chargeType);
                         //solution = encirclingPreysearchForPreyIdWise(C, A, Xrandcopy, solution, timeSlots, plugs);
                     }
                 } else {
-                    solution = bubbleNetAttackingElementWise(Xbest, solution, timeSlots, plugs);
+                    solution = bubbleNetAttackingElementWise(Xbest, solution, timeSlots, plugs, chargeType);
                     //solution = bubbleNetAttackingIdWise(Xbest, solution, timeSlots, plugs);
                 }
                 initialPopulation.set(i, solution);
@@ -463,7 +545,7 @@ public class EVhelper {
 
         Instant finish = Instant.now();
         long timeElapsed = Duration.between(start, finish).toMillis();
-        System.out.println("Time elapsed: "+timeElapsed);
+        System.out.println("Time elapsed: " + timeElapsed);
         System.out.println("Best final solution is " + Arrays.deepToString(Xbest));
         System.out.println("Fitness score for best solution is: " + fitnessFunction(Xbest, ediffList, weightsForFitness, weightsForPenalty));
         System.out.println("Euclidean distance of initial population is: " + euclideanDistanceDiversity(initialPopulation));
@@ -481,7 +563,45 @@ public class EVhelper {
             valueChargedByCars.add(sumCol);
         }
         this.printEdiffOldAndNewGraphic(ediffList, ediffNew, valueChargedByCars);
-        return Xbest;
+
+        List<ElectricVehicleChargedValue[][]> XbestList = new ArrayList<>();
+
+        XbestList.add(Xbest);
+        double correlation = calculatePearsonCorrelation(ediffList, valueChargedByCars);
+        // t = 6 k = 5
+        int te=6;
+        /*ArrayList<Double> aconvRate = new ArrayList<>();
+        while(te<bestFitnessAmongEachIteration.size()-5){
+            double convRate =1-
+                    Math.abs(
+                           Math.pow((bestFitnessAmongEachIteration.get(te+5-1) - bestFitnessAmongEachIteration.get(te-1))/
+                                   (bestFitnessAmongEachIteration.get(te-1) - bestFitnessAmongEachIteration.get(te-5-1)),(1/5))
+                    );
+            System.out.println(convRate);
+            aconvRate.add(convRate);
+            te++;
+        }*/
+        double convRate = Math.abs(bestFitnessAmongEachIteration.get(bestFitnessAmongEachIteration.size()-1)-bestFitnessAmongEachIteration.get(0))/ bestFitnessAmongEachIteration.size();
+
+        //new ediff
+        listOfLists.add(Collections.singletonList(ediffNew));
+        // value in cars
+        listOfLists.add(Collections.singletonList(valueChargedByCars));
+        // solution
+        listOfLists.add(Collections.singletonList(XbestList));
+        // correlation
+        listOfLists.add(Collections.singletonList(correlation));
+        //fitness evolution
+        listOfLists.add(Collections.singletonList(bestFitnessAmongEachIteration));
+        //conv rate
+        listOfLists.add(Collections.singletonList(convRate));
+        //time elapsed
+        listOfLists.add(Collections.singletonList(timeElapsed));
+        //constraint violation
+        listOfLists.add(Collections.singletonList(constraintCalculation(Xbest, ediffList, weightsForFitness, weightsForPenalty)));
+        // euclidean distance
+        listOfLists.add(Collections.singletonList(euclideanDistanceForPopulationEachIteration));
+        return listOfLists;
     }
 
     private void printFitnessAndSolutionsInFile(ArrayList<Double> bestFitnessAmongEachIteration) throws IOException {
@@ -565,6 +685,39 @@ public class EVhelper {
 
         workbook.write(out);
         out.close();
+    }
+
+    private double calculatePearsonCorrelation(List<Double> list1, ArrayList<Integer> list2) {
+        if (list1.size() != list2.size()) {
+            throw new IllegalArgumentException("The two lists must have the same length.");
+        }
+
+        int n = list1.size();
+        double sumX = 0.0;
+        double sumY = 0.0;
+        double sumXY = 0.0;
+        double sumX2 = 0.0;
+        double sumY2 = 0.0;
+
+        for (int i = 0; i < n; i++) {
+            double x = list1.get(i);
+            double y = list2.get(i);
+
+            sumX += x;
+            sumY += y;
+            sumXY += x * y;
+            sumX2 += x * x;
+            sumY2 += y * y;
+        }
+
+        double numerator = n * sumXY - sumX * sumY;
+        double denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+
+        if (denominator == 0.0) {
+            return 0.0;  // If the denominator is zero, return 0 to avoid division by zero error.
+        }
+
+        return numerator / denominator;
     }
 }
 

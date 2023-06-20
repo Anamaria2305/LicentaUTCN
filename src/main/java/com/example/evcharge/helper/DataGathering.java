@@ -2,16 +2,10 @@ package com.example.evcharge.helper;
 
 
 import com.example.evcharge.models.ElectricVehicle;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,9 +36,11 @@ public class DataGathering{
                 cal.add(Calendar.DATE, -1);
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         String url = "";
+        double chargeConstant = 1.0;
         if(chargeType.equals("charge")){
             url="https://www.caiso.com/outlook/SP/History/"+dateFormat.format(cal.getTime())+"/fuelsource.csv";
         }else{
+            chargeConstant = -0.3;
             url="https://www.caiso.com/outlook/SP/History/"+dateFormat.format(cal.getTime())+"/demand.csv";
         }
         try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
@@ -63,7 +59,7 @@ public class DataGathering{
                 while(br.readLine()!=null || index <=end){
                     line = br.readLine();
                     if(start<=index && end>=index && index % 6 == 0){
-                        Double value = Double.parseDouble(line.split(",")[1])/170;
+                        Double value = chargeConstant * Double.parseDouble(line.split(",")[1])/100;
                         ediff.add(value);
                     }
                     index++;

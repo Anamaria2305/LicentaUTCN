@@ -29,5 +29,9 @@ public class ChargingStation {
     @Convert(converter = IntegerListConverter.class)
     private List<Integer> plugIds;
 
-
+    public ChargingStation(Integer id, String name, List<Integer> plugIds) {
+        this.id = id;
+        this.name = name;
+        this.plugIds = plugIds;
+    }
 }

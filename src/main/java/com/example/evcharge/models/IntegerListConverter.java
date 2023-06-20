@@ -15,7 +15,7 @@ import static java.util.Collections.emptyList;
 
         @Override
         public String convertToDatabaseColumn(List<Integer> stringList) {
-            return stringList != null ? String.join((CharSequence) SPLIT_CHAR, (CharSequence) stringList) : "";
+            return stringList != null ? String.join(",", stringList.stream().map(String::valueOf).collect(Collectors.toList())) : "";
         }
 
         @Override

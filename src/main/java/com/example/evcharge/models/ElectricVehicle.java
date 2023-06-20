@@ -1,5 +1,6 @@
 package com.example.evcharge.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
@@ -10,6 +11,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "driver"})
 public class ElectricVehicle {
 
     @Id
@@ -24,6 +27,10 @@ public class ElectricVehicle {
 
     private Integer chrDisPerHour;
 
+    private String plateNumber;
+
+    private String model;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "csid")
     private ChargingStation favouriteChargingStation;
@@ -34,10 +41,33 @@ public class ElectricVehicle {
     @Convert(converter = IntegerListConverter.class)
     private List<Integer> constraintsPenalty;
 
-    @Override
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "driver_id", referencedColumnName = "id")
+    private Driver driver;
+
+    public ElectricVehicle(Integer id, Integer maxCapacity, Integer SOCcurrent, Integer minSOC, Integer chrDisPerHour, List<Integer> favouriteTimeSlots, List<Integer> constraintsPenalty) {
+        this.id = id;
+        this.maxCapacity = maxCapacity;
+        this.SOCcurrent = SOCcurrent;
+        this.minSOC = minSOC;
+        this.chrDisPerHour = chrDisPerHour;
+        this.favouriteTimeSlots = favouriteTimeSlots;
+        this.constraintsPenalty = constraintsPenalty;
+    }
+
+    public ElectricVehicle(Integer maxCapacity, Integer SOCcurrent, Integer minSOC, Integer chrDisPerHour, List<Integer> favouriteTimeSlots, List<Integer> constraintsPenalty) {
+        this.maxCapacity = maxCapacity;
+        this.SOCcurrent = SOCcurrent;
+        this.minSOC = minSOC;
+        this.chrDisPerHour = chrDisPerHour;
+        this.favouriteTimeSlots = favouriteTimeSlots;
+        this.constraintsPenalty = constraintsPenalty;
+    }
+
+    /*@Override
     public String toString() {
         return "ElectricVehicle{" +
                 "id=" + id +
                 '}';
-    }
+    }*/
 }
