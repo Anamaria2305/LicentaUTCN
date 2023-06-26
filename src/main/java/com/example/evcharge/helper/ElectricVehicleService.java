@@ -40,12 +40,51 @@ public class ElectricVehicleService {
 
             List<ElectricVehicle> electricVehiclesListCS = new ArrayList<>();
             if(cs.get().getElectricVehicles()!=null){
-                electricVehiclesListCS.add(electricVehicle);
+                electricVehiclesListCS.addAll(cs.get().getElectricVehicles());
             }
             electricVehiclesListCS.add(electricVehicle);
             cs.get().setElectricVehicles(electricVehiclesListCS);
             chargingStationsService.saveCS(cs.get());
         }
         return iElectricVehicleRepository.save(electricVehicle);
+    }
+
+    public ElectricVehicle findByUsername(String username){
+        Optional<ElectricVehicle> electricVehicle = iElectricVehicleRepository.findAll().stream().filter(ev -> ev.getDriver() != null && ev.getDriver().getUsername().equals(username)).findFirst();
+        return electricVehicle.isPresent() ? electricVehicle.get() : null;
+    }
+
+    public Optional<ElectricVehicle> findById(Integer id){
+        return iElectricVehicleRepository.findById(id);
+    }
+
+    public ElectricVehicle editVehicle(ElectricVehicle ev, String username){
+        ElectricVehicle electricVehicle = this.findByUsername(username);
+        if(electricVehicle!=null){
+            electricVehicle.setPlateNumber(ev.getPlateNumber());
+            electricVehicle.setModel(ev.getModel());
+            electricVehicle.setMaxCapacity(ev.getMaxCapacity());
+            electricVehicle.setConstraintsPenalty(ev.getConstraintsPenalty());
+            electricVehicle.setFavouriteTimeSlots(ev.getFavouriteTimeSlots());
+            electricVehicle.setFavouriteChargingStation(ev.getFavouriteChargingStation());
+        }
+        return iElectricVehicleRepository.save(electricVehicle);
+    }
+
+    public ElectricVehicle saveVehicle(ElectricVehicle ev, String username){
+        Optional<Driver> driver = driverService.findByUsername(username);
+        if(driver.isPresent()){
+            iElectricVehicleRepository.save(ev);
+            driver.get().setElectricVehicle(ev);
+            ev.setDriver(driver.get());
+            List<ElectricVehicle> newArray = new ArrayList<>();
+            if(ev.getFavouriteChargingStation().getElectricVehicles()!=null){
+                newArray.addAll(ev.getFavouriteChargingStation().getElectricVehicles());
+            }
+            newArray.add(ev);
+            ev.getFavouriteChargingStation().setElectricVehicles(newArray);
+            chargingStationsService.saveCS(ev.getFavouriteChargingStation());
+        }
+        return iElectricVehicleRepository.save(ev);
     }
 }

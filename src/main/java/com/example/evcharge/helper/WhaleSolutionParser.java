@@ -31,8 +31,6 @@ public class WhaleSolutionParser {
         for (int j = 0; j < col; j++) {
             for (int i = 0; i < row; i++) {
                 if (solution[i][j] != null) {
-                    transformedSolution.add(solution[i][j]);
-                    charginHours.add(j);
                     int id = 0;
                     if (i % 2 == 0) {
                         id = (i + 2) / 2;
@@ -41,6 +39,10 @@ public class WhaleSolutionParser {
                     }
                     Optional<ChargingStation> cs = css.findById(id);
                     cs.ifPresent(chargingStations::add);
+                    solution[i][j].setTime(j);
+                    solution[i][j].setFavouriteChargingStation(cs.get());
+                    transformedSolution.add(solution[i][j]);
+                    charginHours.add(j);
                 }
             }
         }
@@ -89,6 +91,8 @@ public class WhaleSolutionParser {
         listOfListsParsed.add(Collections.singletonList(listOfLists.get(7).get(0)));
         //euclidean
         listOfListsParsed.add(Collections.singletonList(listOfLists.get(8).get(0)));
+        // best each it
+        listOfListsParsed.add(Collections.singletonList(listOfLists.get(9).get(0)));
         return listOfListsParsed;
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "stations")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "electricVehicles"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "electricVehicles","elcv"})
 @Getter
 @Setter
 @AllArgsConstructor
@@ -29,9 +29,17 @@ public class ChargingStation {
     @Convert(converter = IntegerListConverter.class)
     private List<Integer> plugIds;
 
+    @OneToMany(mappedBy = "favouriteChargingStation",fetch = FetchType.EAGER,
+            orphanRemoval = true)
+    private List<ElectricVehicleChargedValue> elcv;
+
     public ChargingStation(Integer id, String name, List<Integer> plugIds) {
         this.id = id;
         this.name = name;
         this.plugIds = plugIds;
+    }
+
+    public ChargingStation(Integer id) {
+        this.id = id;
     }
 }

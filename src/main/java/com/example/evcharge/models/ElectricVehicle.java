@@ -11,8 +11,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "driver"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "driver","schedule"})
 public class ElectricVehicle {
 
     @Id
@@ -45,6 +44,9 @@ public class ElectricVehicle {
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
+    @OneToOne(mappedBy = "electricVehicle",cascade = CascadeType.ALL)
+    private ElectricVehicleChargedValue schedule;
+
     public ElectricVehicle(Integer id, Integer maxCapacity, Integer SOCcurrent, Integer minSOC, Integer chrDisPerHour, List<Integer> favouriteTimeSlots, List<Integer> constraintsPenalty) {
         this.id = id;
         this.maxCapacity = maxCapacity;
@@ -63,11 +65,4 @@ public class ElectricVehicle {
         this.favouriteTimeSlots = favouriteTimeSlots;
         this.constraintsPenalty = constraintsPenalty;
     }
-
-    /*@Override
-    public String toString() {
-        return "ElectricVehicle{" +
-                "id=" + id +
-                '}';
-    }*/
 }

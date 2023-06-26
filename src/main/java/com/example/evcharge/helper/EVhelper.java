@@ -264,7 +264,7 @@ public class EVhelper {
         for (int k = 0; k < plugs; k++) {
             for (int l = 0; l < timeSlots; l++) {
                 if (XbestRand[k][l] != null && D[k][l] != 0 && Xcurrent[k][l] != null) {
-                    if (!chargeType.equals("charge") && (int) (XbestRand[k][l].getValueCharged() + A * D[k][l] + 0.5) > 0) {
+                    if (!chargeType.equals("Charge") && (int) (XbestRand[k][l].getValueCharged() + A * D[k][l] + 0.5) > 0) {
                         Xcurrent[k][l].setValueCharged((-1) * (int) (XbestRand[k][l].getValueCharged() + A * D[k][l] + 0.5));
                     } else {
                         Xcurrent[k][l].setValueCharged((int) (XbestRand[k][l].getValueCharged() + A * D[k][l] + 0.5));
@@ -278,7 +278,7 @@ public class EVhelper {
     public ElectricVehicleChargedValue[][] bubbleNetAttackingElementWise(final ElectricVehicleChargedValue[][] Xbest, ElectricVehicleChargedValue[][] Xcurrent,
                                                                          Integer timeSlots, Integer plugs, String chargeType) {
         int chargeConstant = 1;
-        if (!chargeType.equals("charge"))
+        if (!chargeType.equals("Charge"))
             chargeConstant = -1;
         double[][] D = new double[plugs][timeSlots];
         for (int i = 0; i < plugs; i++) {
@@ -293,7 +293,7 @@ public class EVhelper {
         for (int k = 0; k < plugs; k++) {
             for (int m = 0; m < timeSlots; m++) {
                 if (Xbest[k][m] != null && D[k][m] != 0 && Xcurrent[k][m] != null) {
-                    if (!chargeType.equals("charge") && (int) (D[k][m] * Math.exp(l) * Math.cos(2 * Math.PI + l) + Xbest[k][m].getValueCharged() + 0.5) > 0) {
+                    if (!chargeType.equals("Charge") && (int) (D[k][m] * Math.exp(l) * Math.cos(2 * Math.PI + l) + Xbest[k][m].getValueCharged() + 0.5) > 0) {
                         Xcurrent[k][m].setValueCharged((-1) * (int) (D[k][m] * Math.exp(l) * Math.cos(2 * Math.PI + l) + Xbest[k][m].getValueCharged() + 0.5));
                     } else {
                         Xcurrent[k][m].setValueCharged((int) (D[k][m] * Math.exp(l) * Math.cos(2 * Math.PI + l) + Xbest[k][m].getValueCharged() + 0.5));
@@ -392,7 +392,7 @@ public class EVhelper {
                 }
 
                 if (ediffList.get(a) < 0 && ediffList.get(a) > energyForCars) {
-                    System.out.println("EDiif de a "+ediffList.get(a) +" energy for cars "+energyForCars);
+                   // System.out.println("EDiif de a "+ediffList.get(a) +" energy for cars "+energyForCars);
                     ok = false;
                     while (ediffList.get(a) > energyForCars) {
                         for (int c = 0; c < plugs; c++) {
@@ -468,6 +468,7 @@ public class EVhelper {
 
         ElectricVehicleChargedValue[][] Xbest = new ElectricVehicleChargedValue[plugs][timeSlots];
 
+        ArrayList<Double> bestFitnessGloballyEachIteration = new ArrayList<>();
         ArrayList<Double> bestFitnessAmongEachIteration = new ArrayList<>();
         List<ElectricVehicleChargedValue[][]> bestSolutionEachIteration = new ArrayList<>();
         ArrayList<Double> euclideanDistanceForPopulationEachIteration = new ArrayList<>();
@@ -487,6 +488,7 @@ public class EVhelper {
                 minScore = currentScore;
             }
         }
+        bestFitnessGloballyEachIteration.add(minScore);
         bestFitnessAmongEachIteration.add(minScore);
         bestSolutionEachIteration.add(this.deepCopy(plugs, timeSlots, Xbest));
         euclideanDistanceForPopulationEachIteration.add(euclideanDistanceDiversity(initialPopulation));
@@ -523,6 +525,21 @@ public class EVhelper {
             // check if any search agent goes beyond search space and amend it
             initialPopulation = initialPopulation.stream().map(solution -> checkSearchAgentGoesBeyondSearchSpace(solution, plugs, timeSlots, ediffList)).collect(Collectors.toList());
             euclideanDistanceForPopulationEachIteration.add(euclideanDistanceDiversity(initialPopulation));
+
+            //best fitness each iterations
+            ArrayList<Double> fitnessValuesEachIth = new ArrayList<>();
+            for (ElectricVehicleChargedValue[][] solution : initialPopulation) {
+                fitnessValuesEachIth.add(fitnessFunction(solution, ediffList, weightsForFitness, weightsForPenalty));
+            }
+            double maxFitnessIT = Double.MAX_VALUE;
+            for (Double valoa : fitnessValuesEachIth) {
+                if (valoa < maxFitnessIT) {
+                    maxFitnessIT = valoa;
+                }
+            }
+
+            bestFitnessAmongEachIteration.add(maxFitnessIT);
+
             for (ElectricVehicleChargedValue[][] solution : initialPopulation) {
                 Double currentScoreAfterUpdates = fitnessFunction(solution, ediffList, weightsForFitness, weightsForPenalty);
                 if (currentScoreAfterUpdates < minScore) {
@@ -530,12 +547,12 @@ public class EVhelper {
                     minScore = currentScoreAfterUpdates;
                 }
             }
-            if (minScore == bestFitnessAmongEachIteration.get(bestFitnessAmongEachIteration.size() - 1)) {
+            if (minScore == bestFitnessGloballyEachIteration.get(bestFitnessGloballyEachIteration.size() - 1)) {
                 iterationsSinceLastChange++;
             } else {
                 iterationsSinceLastChange = 0;
             }
-            bestFitnessAmongEachIteration.add(minScore);
+            bestFitnessGloballyEachIteration.add(minScore);
             bestSolutionEachIteration.add(this.deepCopy(plugs, timeSlots, Xbest));
             t++;
             if (iterationsSinceLastChange > 10) {
@@ -549,7 +566,7 @@ public class EVhelper {
         System.out.println("Best final solution is " + Arrays.deepToString(Xbest));
         System.out.println("Fitness score for best solution is: " + fitnessFunction(Xbest, ediffList, weightsForFitness, weightsForPenalty));
         System.out.println("Euclidean distance of initial population is: " + euclideanDistanceDiversity(initialPopulation));
-        this.printFitnessAndSolutionsInFile(bestFitnessAmongEachIteration);
+        this.printFitnessAndSolutionsInFile(bestFitnessGloballyEachIteration);
         this.printEuclideanDistance(euclideanDistanceForPopulationEachIteration);
         ArrayList<Double> ediffNew = this.calculateNewEdiff(Xbest, ediffList, plugs, timeSlots);
         ArrayList<Integer> valueChargedByCars = new ArrayList<>();
@@ -571,17 +588,17 @@ public class EVhelper {
         // t = 6 k = 5
         int te=6;
         /*ArrayList<Double> aconvRate = new ArrayList<>();
-        while(te<bestFitnessAmongEachIteration.size()-5){
+        while(te<bestFitnessGloballyEachIteration.size()-5){
             double convRate =1-
                     Math.abs(
-                           Math.pow((bestFitnessAmongEachIteration.get(te+5-1) - bestFitnessAmongEachIteration.get(te-1))/
-                                   (bestFitnessAmongEachIteration.get(te-1) - bestFitnessAmongEachIteration.get(te-5-1)),(1/5))
+                           Math.pow((bestFitnessGloballyEachIteration.get(te+5-1) - bestFitnessGloballyEachIteration.get(te-1))/
+                                   (bestFitnessGloballyEachIteration.get(te-1) - bestFitnessGloballyEachIteration.get(te-5-1)),(1/5))
                     );
             System.out.println(convRate);
             aconvRate.add(convRate);
             te++;
         }*/
-        double convRate = Math.abs(bestFitnessAmongEachIteration.get(bestFitnessAmongEachIteration.size()-1)-bestFitnessAmongEachIteration.get(0))/ bestFitnessAmongEachIteration.size();
+        double convRate = Math.abs(bestFitnessGloballyEachIteration.get(bestFitnessGloballyEachIteration.size()-1)-bestFitnessGloballyEachIteration.get(0))/ bestFitnessGloballyEachIteration.size();
 
         //new ediff
         listOfLists.add(Collections.singletonList(ediffNew));
@@ -592,7 +609,7 @@ public class EVhelper {
         // correlation
         listOfLists.add(Collections.singletonList(correlation));
         //fitness evolution
-        listOfLists.add(Collections.singletonList(bestFitnessAmongEachIteration));
+        listOfLists.add(Collections.singletonList(bestFitnessGloballyEachIteration));
         //conv rate
         listOfLists.add(Collections.singletonList(convRate));
         //time elapsed
@@ -601,17 +618,19 @@ public class EVhelper {
         listOfLists.add(Collections.singletonList(constraintCalculation(Xbest, ediffList, weightsForFitness, weightsForPenalty)));
         // euclidean distance
         listOfLists.add(Collections.singletonList(euclideanDistanceForPopulationEachIteration));
+        // fitness each ith
+        listOfLists.add(Collections.singletonList(bestFitnessAmongEachIteration));
         return listOfLists;
     }
 
-    private void printFitnessAndSolutionsInFile(ArrayList<Double> bestFitnessAmongEachIteration) throws IOException {
+    private void printFitnessAndSolutionsInFile(ArrayList<Double> bestFitnessGloballyEachIteration) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet spreadsheet = workbook.createSheet("FitnessValues");
         XSSFRow row;
-        for (int i = 0; i < bestFitnessAmongEachIteration.size(); i++) {
+        for (int i = 0; i < bestFitnessGloballyEachIteration.size(); i++) {
             row = spreadsheet.createRow(i);
             Cell cell = row.createCell(0);
-            cell.setCellValue(bestFitnessAmongEachIteration.get(i));
+            cell.setCellValue(bestFitnessGloballyEachIteration.get(i));
 
         }
         SimpleDateFormat sdf = new SimpleDateFormat("dd_M_yyyy_hh_mm_ss");

@@ -22,6 +22,8 @@ public class Driver {
 
     private String password;
 
+    private String phone;
+
     @OneToOne(mappedBy = "driver", cascade = CascadeType.ALL)
     private ElectricVehicle electricVehicle;
 }

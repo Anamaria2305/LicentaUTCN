@@ -22,7 +22,19 @@ public class DriverService {
         return iDriverRepository.findById(id);
     }
 
+    public Optional<Driver> findByUsername(String username){
+        return Optional.ofNullable(iDriverRepository.findByUsername(username));
+    }
+
     public Driver saveDriver(Driver driver){
         return iDriverRepository.save(driver);
+    }
+
+    public Optional<Driver> login(Driver driver){
+        Optional<Driver> driver1 = iDriverRepository.findAll().stream().filter(drivers -> drivers.getUsername().equals(driver.getUsername()))
+                .findFirst();
+        if(driver1.isPresent() && driver1.get().getPassword().equals(driver.getPassword()))
+            return driver1;
+        return Optional.empty();
     }
 }
