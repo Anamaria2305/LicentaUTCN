@@ -229,7 +229,7 @@ public class DataGathering{
     public ArrayList<Double> collectEdiffEXP(Integer plugs, Integer startTime, String chargeType,Integer dividingConstant){
         ArrayList<Double> ediff = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -2);
+        cal.add(Calendar.DATE, -1);
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         String url = "";
         double chargeConstant = 1.0;

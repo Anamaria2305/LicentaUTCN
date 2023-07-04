@@ -39,10 +39,12 @@ public class WhaleSolutionParser {
                     }
                     Optional<ChargingStation> cs = css.findById(id);
                     cs.ifPresent(chargingStations::add);
-                    solution[i][j].setTime(j);
-                    solution[i][j].setFavouriteChargingStation(cs.get());
-                    transformedSolution.add(solution[i][j]);
-                    charginHours.add(j);
+                    if(cs.isPresent()) {
+                        solution[i][j].setTime(j);
+                        solution[i][j].setFavouriteChargingStation(cs.get());
+                        transformedSolution.add(solution[i][j]);
+                        charginHours.add(j);
+                    }
                 }
             }
         }

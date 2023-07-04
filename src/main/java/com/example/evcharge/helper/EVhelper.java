@@ -142,16 +142,22 @@ public class EVhelper {
             int col = population.get(nr)[0].length;
             for (int i = 0; i < row; i++) {
                 for (int j = 0; j < col; j++) {
+
                     if (population.get(nr)[i][j] != null) {
+
                         int row2 = population.get(nr + 1).length;
                         int col2 = population.get(nr + 1)[0].length;
                         for (int a = 0; a < row; a++) {
                             for (int b = 0; b < col; b++) {
+
+
                                 if (population.get(nr + 1)[a][b] != null) {
                                     if (population.get(nr + 1)[a][b].getElectricVehicle().getId() == population.get(nr)[i][j].getElectricVehicle().getId()) {
                                         /*euclideanDistance += (Math.abs(population.get(nr)[i][j].getValueCharged() - population.get(nr + 1)[a][b].getValueCharged()));
                                         euclideanDistance += Math.abs(j - b);*/
-                                        double someValue = Math.sqrt(Math.pow(Math.abs(j - b),2) + Math.pow(Math.abs(population.get(nr)[i][j].getValueCharged() - population.get(nr + 1)[a][b].getValueCharged()),2));
+                                        double someValue = Math.sqrt(Math.pow(Math.abs(j - b),2) +
+                                                Math.pow(Math.abs(population.get(nr)[i][j].getValueCharged() - population.get(nr + 1)[a][b].getValueCharged()),2) +
+                                                Math.pow(i-a,2));
                                         if(someValue > maxim){
                                             maxim = someValue;
                                         }
@@ -226,7 +232,8 @@ public class EVhelper {
                     if (!electricVehicles[row][col].getElectricVehicle().getFavouriteChargingStation().getPlugIds().contains(row)) {
                         violation++;
                         CV += electricVehicles[row][col].getElectricVehicle().getConstraintsPenalty().get(0);
-                        charginStationViolation += electricVehicles[row][col].getElectricVehicle().getConstraintsPenalty().get(0);
+                        /*charginStationViolation += electricVehicles[row][col].getElectricVehicle().getConstraintsPenalty().get(0);*/
+                        charginStationViolation++;
                     }
                     if (!electricVehicles[row][col].getElectricVehicle().getFavouriteTimeSlots().contains(col + 1)) {
                         violation++;
@@ -238,7 +245,8 @@ public class EVhelper {
         ArrayList<Integer> constraintsFinal = new ArrayList<>();
         constraintsFinal.add(violation);
         constraintsFinal.add(charginStationViolation);
-        constraintsFinal.add((int) (CV - charginStationViolation));
+        /*constraintsFinal.add((int) (CV - charginStationViolation));*/
+        constraintsFinal.add((int) (violation - charginStationViolation));
         return constraintsFinal;
     }
 
@@ -547,7 +555,7 @@ public class EVhelper {
                     minScore = currentScoreAfterUpdates;
                 }
             }
-            if (minScore == bestFitnessGloballyEachIteration.get(bestFitnessGloballyEachIteration.size() - 1)) {
+            if (minScore.equals(bestFitnessGloballyEachIteration.get(bestFitnessGloballyEachIteration.size() - 1))) {
                 iterationsSinceLastChange++;
             } else {
                 iterationsSinceLastChange = 0;
@@ -733,7 +741,7 @@ public class EVhelper {
         double denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
 
         if (denominator == 0.0) {
-            return 0.0;  // If the denominator is zero, return 0 to avoid division by zero error.
+            return 0.0;
         }
 
         return numerator / denominator;

@@ -66,7 +66,7 @@ public class EVController {
             dividing =400;
         }
 
-        return dataGathering.collectEdiffEXP(plugs, startTime,chargeType,dividing);
+        return dataGathering.collectEdiffEXP(plugs, startTime,chargeType,75);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/allcs")

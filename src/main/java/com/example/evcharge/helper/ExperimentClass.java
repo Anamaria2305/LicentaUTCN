@@ -28,7 +28,7 @@ public class ExperimentClass {
 
     final List<List<Integer>> constraintsPenalties = Arrays.asList(Arrays.asList(3, 5), Arrays.asList(5, 3));
 
-    final Integer minSoc = 20;
+    final Integer minSoc = 10;
 
     private List<ChargingStation> generateCharginStations(Integer number) {
         List<ChargingStation> csList = new ArrayList<>();
@@ -48,7 +48,7 @@ public class ExperimentClass {
             if (chargeType.equals("Charge")) {
                 currentSOC = ran.nextInt(35 - 10 + 1) + 10;
             } else {
-                currentSOC = ran.nextInt(100 - 75 + 1) + 75;
+                currentSOC = ran.nextInt(100 - 85 + 1) + 85;
             }
             Integer indexForArrays = ran.nextInt(batteryCapacity.size());
             Integer batteryCapacity = this.batteryCapacity.get(indexForArrays);
@@ -94,7 +94,7 @@ public class ExperimentClass {
             dividingCt =400;
         }
 
-        ArrayList<Double> ediffList = dataGathering.collectEdiffEXP(time, startTime, chargeType,dividingCt);
+        ArrayList<Double> ediffList = dataGathering.collectEdiffEXP(time, startTime, chargeType,75);
         return whaleSolutionParser.parseSolution(eVhelper.whaleOptimizationAlgorithm(100, charginSt * 2, time, csList, evList, ediffList, 150, chargeType), startTime);
     }
 
